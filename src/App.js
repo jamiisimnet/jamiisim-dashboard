@@ -1,24 +1,48 @@
-import logo from './logo.svg';
+// App.js
+import React, { useState } from 'react';
 import './App.css';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+import { DEMO_USERS } from './utils/api';
 
 function App() {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUserRole, setCurrentUserRole] = useState(null);
+  const [currentPage, setCurrentPage] = useState('Home');
+
+  const handleLogin = (username, password) => {
+    const user = DEMO_USERS[username];
+    if (user && user.password === password) {
+      setCurrentUser(username);
+      setCurrentUserRole(user.role);
+      setCurrentPage('Home');
+      return true;
+    }
+    return false;
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setCurrentUserRole(null);
+    setCurrentPage('Home');
+  };
+
+  const navigateTo = (page) => {
+    setCurrentPage(page);
+  };
+
+  if (!currentUser) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Dashboard 
+      currentUser={currentUser}
+      currentUserRole={currentUserRole}
+      currentPage={currentPage}
+      onNavigate={navigateTo}
+      onLogout={handleLogout}
+    />
   );
 }
 
